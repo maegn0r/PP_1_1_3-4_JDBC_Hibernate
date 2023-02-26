@@ -22,10 +22,14 @@ public class UserDaoJDBCImpl implements UserDao {
                 PRIMARY KEY (id)
                 );
                 """;
-        try (Connection connection = Util.getConnection();
-             Statement statement = connection.createStatement()) {
-            statement.executeUpdate(createUsersTable);
-            connection.commit();
+        try (Connection connection = Util.getConnection()) {
+            try (Statement statement = connection.createStatement()) {
+                statement.executeUpdate(createUsersTable);
+                connection.commit();
+            } catch (SQLException e) {
+                connection.rollback();
+                e.printStackTrace();
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -33,10 +37,14 @@ public class UserDaoJDBCImpl implements UserDao {
 
     public void dropUsersTable() {
         String dropUsersTable = "DROP TABLE if exists USERS;";
-        try (Connection connection = Util.getConnection();
-             Statement statement = connection.createStatement()) {
-            statement.executeUpdate(dropUsersTable);
-            connection.commit();
+        try (Connection connection = Util.getConnection()) {
+            try (Statement statement = connection.createStatement()) {
+                statement.executeUpdate(dropUsersTable);
+                connection.commit();
+            } catch (SQLException e) {
+                connection.rollback();
+                e.printStackTrace();
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -44,28 +52,36 @@ public class UserDaoJDBCImpl implements UserDao {
 
     public void saveUser(String name, String lastName, byte age) {
         String saveUser = "INSERT into users (name,lastName,age) VALUES (?,?,?)";
-        try (Connection connection = Util.getConnection();
-             PreparedStatement ps = connection.prepareStatement(saveUser)) {
-            ps.setString(1, name);
-            ps.setString(2, lastName);
-            ps.setByte(3, age);
-            ps.executeUpdate();
-            connection.commit();
-            System.out.println("User c РёРјРµРЅРµРј - " + name + " РґРѕР±Р°РІР»РµРЅ РІ Р±Р°Р·Сѓ РґР°РЅРЅС‹С…");
+        try (Connection connection = Util.getConnection()) {
+            try (PreparedStatement ps = connection.prepareStatement(saveUser)) {
+                ps.setString(1, name);
+                ps.setString(2, lastName);
+                ps.setByte(3, age);
+                ps.executeUpdate();
+                connection.commit();
+                System.out.println("User c именем - " + name + " добавлен в базу данных");
+            } catch (SQLException e) {
+                connection.rollback();
+                e.printStackTrace();
+            }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
     }
 
     public void removeUserById(long id) {
         String removeUser = "DELETE FROM users WHERE id=?";
-        try (Connection connection = Util.getConnection();
-             PreparedStatement ps = connection.prepareStatement(removeUser)) {
-            ps.setLong(1, id);
-            ps.executeUpdate();
-            connection.commit();
+        try (Connection connection = Util.getConnection()) {
+            try (PreparedStatement ps = connection.prepareStatement(removeUser)) {
+                ps.setLong(1, id);
+                ps.executeUpdate();
+                connection.commit();
+            } catch (SQLException e) {
+                connection.rollback();
+                e.printStackTrace();
+            }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
     }
 
@@ -83,19 +99,23 @@ public class UserDaoJDBCImpl implements UserDao {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
         return result;
     }
 
     public void cleanUsersTable() {
         String removeUser = "DELETE FROM users";
-        try (Connection connection = Util.getConnection();
-             PreparedStatement ps = connection.prepareStatement(removeUser)) {
-            ps.executeUpdate();
-            connection.commit();
+        try (Connection connection = Util.getConnection()) {
+            try (PreparedStatement ps = connection.prepareStatement(removeUser)) {
+                ps.executeUpdate();
+                connection.commit();
+            } catch (SQLException e) {
+                connection.rollback();
+                e.printStackTrace();
+            }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
     }
 }
