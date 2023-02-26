@@ -59,7 +59,7 @@ public class UserDaoJDBCImpl implements UserDao {
                 ps.setByte(3, age);
                 ps.executeUpdate();
                 connection.commit();
-                System.out.println("User c именем - " + name + " добавлен в базу данных");
+                System.out.println("User c РёРјРµРЅРµРј - " + name + " РґРѕР±Р°РІР»РµРЅ РІ Р±Р°Р·Сѓ РґР°РЅРЅС‹С…");
             } catch (SQLException e) {
                 connection.rollback();
                 e.printStackTrace();
