@@ -6,11 +6,6 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class UserDaoHibernateImpl implements UserDao {
@@ -21,8 +16,9 @@ public class UserDaoHibernateImpl implements UserDao {
 
     @Override
     public void createUsersTable() {
+        Transaction transaction = null;
         try (Session session = Util.getSessionFactory().openSession()) {
-            Transaction tx = session.beginTransaction();
+            transaction = session.beginTransaction();
             String createUsersTable = """
                     CREATE TABLE if not exists users (
                     id bigint NOT NULL AUTO_INCREMENT,
@@ -33,57 +29,86 @@ public class UserDaoHibernateImpl implements UserDao {
                     );
                     """;
             session.createSQLQuery(createUsersTable).executeUpdate();
-            tx.commit();
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            e.printStackTrace();
         }
-
     }
 
     @Override
     public void dropUsersTable() {
+        Transaction transaction = null;
         try (Session session = Util.getSessionFactory().openSession()) {
-            Transaction tx = session.beginTransaction();
+            transaction = session.beginTransaction();
             String dropUsersTable = "DROP TABLE if exists USERS;";
             session.createNativeQuery(dropUsersTable).executeUpdate();
-            tx.commit();
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            e.printStackTrace();
         }
 
     }
 
     @Override
     public void saveUser(String name, String lastName, byte age) {
+        Transaction transaction = null;
         try (Session session = Util.getSessionFactory().openSession()) {
-            Transaction tx = session.beginTransaction();
+            transaction = session.beginTransaction();
             session.save(new User(name, lastName, age));
-            tx.commit();
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            e.printStackTrace();
         }
-
     }
 
     @Override
     public void removeUserById(long id) {
+        Transaction transaction = null;
         try (Session session = Util.getSessionFactory().openSession()) {
-            Transaction tx = session.beginTransaction();
+            transaction = session.beginTransaction();
             session.delete(session.load(User.class, id));
-            tx.commit();
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            e.printStackTrace();
         }
     }
 
     @Override
     public List<User> getAllUsers() {
-        List<User> result;
+        List<User> result = null;
         try (Session session = Util.getSessionFactory().openSession()) {
             result = session.createQuery("SELECT a FROM User a", User.class).getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return result;
     }
 
     @Override
     public void cleanUsersTable() {
+        Transaction transaction = null;
         try (Session session = Util.getSessionFactory().openSession()) {
-            Transaction tx = session.beginTransaction();
+            transaction = session.beginTransaction();
             Query query = session.createQuery("DELETE FROM User");
             query.executeUpdate();
-            tx.commit();
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            e.printStackTrace();
         }
     }
 }
