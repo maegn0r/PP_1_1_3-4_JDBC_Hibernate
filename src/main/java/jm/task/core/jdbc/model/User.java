@@ -4,60 +4,33 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "users")
+@Access(AccessType.FIELD)
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Long id;
+    private final Long id;
 
     @Column(name = "name")
-    private String name;
+    private final String name;
 
     @Column(name = "lastName")
-    private String lastName;
+    private final String lastName;
 
     @Column(name = "age")
-    private Byte age;
+    private final Byte age;
 
     public User() {
-
+        this.id = 0L;
+        this.name = null;
+        this.lastName = null;
+        this.age = 0;
     }
 
     public User(String name, String lastName, Byte age) {
+        this.id = 0L;
         this.name = name;
         this.lastName = lastName;
-        this.age = age;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public Byte getAge() {
-        return age;
-    }
-
-    public void setAge(Byte age) {
         this.age = age;
     }
 
