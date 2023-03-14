@@ -6,7 +6,7 @@ import jm.task.core.jdbc.service.UserServiceImpl;
 public class Main {
     public static void main(String[] args) {
 
-        UserService userService = new UserServiceImpl();
+        final UserService userService = new UserServiceImpl();
 
         userService.createUsersTable();
         userService.saveUser("Nick", "Howard", (byte) 19);
